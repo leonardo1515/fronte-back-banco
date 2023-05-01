@@ -9,10 +9,11 @@ import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import HeaderDefalt from "../../components/header/Header";
 import { setAlertMessage } from "../../store/modules/AlerSlace";
 import {
+  getMessages,
   addMesage,
+  selectMessage,
   deletMessage,
-  selectMessages,
-} from "../../store/modules/MessagsSlace";
+} from "../../store/modules/Message.Slace";
 
 const PageMessags: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -21,12 +22,13 @@ const PageMessags: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const inputMessage = useRef<HTMLInputElement | undefined>();
   const inputDescript = useRef<HTMLInputElement | undefined>();
-  const messagesRedux = useAppSelector(selectMessages);
+  const messagesRedux = useAppSelector(selectMessage);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.LogUser);
+  const user = useAppSelector((state) => state.Login);
 
   useEffect(() => {
+    dispatch(getMessages(user.id));
     if (!user) {
       setName("");
     }
@@ -73,7 +75,7 @@ const PageMessags: React.FC = () => {
 
   const handleDeleteMessage = useCallback(
     (_id: string) => {
-      const idmessage = { id: _id };
+      const idmessage = { id: _id, userId: user.id };
 
       dispatch(deletMessage(idmessage));
       dispatch(
@@ -83,7 +85,7 @@ const PageMessags: React.FC = () => {
         })
       );
     },
-    [dispatch]
+    [dispatch, user.id]
   );
 
   const goMessages = () => {
@@ -97,6 +99,70 @@ const PageMessags: React.FC = () => {
   const openModal = () => {
     setOpen(true);
   };
+
+  //   if (message.length < 4) {
+  //     dispatch(
+  //       setAlertMessage({
+  //         msg: "A mensagem deve ter no minimo 4 caracteres.",
+  //         type: "warning",
+  //       })
+  //     );
+  //     inputMessage.current?.focus();
+  //     return;
+  //   }
+  //   if (descript.length < 4) {
+  //     dispatch(
+  //       setAlertMessage({
+  //         msg: "A descrição deve ter no minimo 4 caracteres.",
+  //         type: "warning",
+  //       })
+  //     );
+  //     inputDescript.current?.focus();
+  //     return;
+  //   }
+  //   const newMwssag = {
+  //     userId: user.id,
+  //     message: message,
+  //     descript: descript,
+  //   };
+
+  //   dispatch(addMesage(newMwssag));
+  //   dispatch(
+  //     setAlertMessage({
+  //       msg: "Nova mensagem adicionada com sucesso.",
+  //       type: "success",
+  //     })
+  //   );
+  //   setMessage("");
+  //   setDescript("");
+  // }, [descript, dispatch, message, user.id]);
+
+  // const handleDeleteMessage = useCallback(
+  //   (_id: string) => {
+  //     const idmessage = { id: _id };
+
+  //     dispatch(deletMessage(idmessage));
+  //     dispatch(
+  //       setAlertMessage({
+  //         msg: "Mensagem deletada com sucesso.",
+  //         type: "success",
+  //       })
+  //     );
+  //   },
+  //   [dispatch]
+  // );
+
+  // const goMessages = () => {
+  //   navigate("/messages");
+  // };
+  // const goSaves = () => {
+  //   navigate("/saves");
+  // };
+
+  // const closeModal = () => setOpen(false);
+  // const openModal = () => {
+  //   setOpen(true);
+  // };
 
   return (
     <Grid
@@ -145,6 +211,7 @@ const PageMessags: React.FC = () => {
           Salvar
         </Button>
       </Grid>
+
       <Grid item xs={9}>
         <IconButton
           onClick={() => openModal()}

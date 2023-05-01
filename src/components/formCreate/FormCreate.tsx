@@ -1,9 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Container from "@mui/material/Container";
 import { Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { createUser } from "../../store/modules/NewUser";
 import { showAlert } from "../../store/modules/StatusApiAlertSlice";
 import MessageStatusApi from "../StatusMessageApi/StatusApiAlert";
@@ -21,7 +21,7 @@ const FormCreate: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const handlerMessagesPg = () => {
+  const handlerMessagesPg = async () => {
     if (name.length < 4) {
       dispatch(
         setAlertMessage({
@@ -55,9 +55,13 @@ const FormCreate: React.FC = () => {
       password: password,
       status: false,
     };
-    dispatch(createUser(newUser));
+    const result = await dispatch(createUser(newUser));
+
     dispatch(showAlert({ open: "open" }));
-    navigate("/");
+
+    if (result.payload === 201) {
+      navigate("/");
+    }
   };
 
   const handlerCreatePg = () => {

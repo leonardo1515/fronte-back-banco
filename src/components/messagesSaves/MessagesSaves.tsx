@@ -6,11 +6,13 @@ import Message from "../Alert/Alert";
 import "./style.css";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import HeaderDefalt from "../../components/header/Header";
-import { deletMessage, selectMessages } from "../../store/modules/MessagsSlace";
+import { deletMessage, selectMessage } from "../../store/modules/Message.Slace";
+
 import { setAlertMessage } from "../../store/modules/AlerSlace";
 
 const SavesMessages: React.FC = () => {
-  const messagesRedux = useAppSelector(selectMessages);
+  const user = useAppSelector((state) => state.Login);
+  const messagesRedux = useAppSelector(selectMessage);
   const saveMessages = messagesRedux.filter(
     (message) => message._status === true
   );
@@ -24,7 +26,7 @@ const SavesMessages: React.FC = () => {
 
   const handleDeleteMessage = useCallback(
     (_id: string) => {
-      const idmessage = { id: _id };
+      const idmessage = { id: _id, userId: user.id };
       dispatch(deletMessage(idmessage));
       dispatch(
         setAlertMessage({
@@ -33,7 +35,7 @@ const SavesMessages: React.FC = () => {
         })
       );
     },
-    [dispatch]
+    [dispatch, user.id]
   );
 
   const goMessages = () => {

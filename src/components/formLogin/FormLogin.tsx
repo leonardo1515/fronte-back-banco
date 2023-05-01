@@ -7,10 +7,11 @@ import "./style.css";
 import Message from "../Alert/Alert";
 import MessageStatusApi from "../StatusMessageApi/StatusApiAlert";
 import { useAppDispatch } from "../../store/hooks";
-import { loginUser } from "../../store/modules/LogSlice";
+// import { loginUser } from "../../store/modules/LogSlice";
+import { loginUser } from "../../store/modules/LoginSlice";
 import { setAlertMessage } from "../../store/modules/AlerSlace";
 import { showAlert } from "../../store/modules/StatusApiAlertSlice";
-import { getAllMessages } from "../../store/modules/MessagsSlace";
+// import { getAllMessages } from "../../store/modules/MessagsSlace";
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -46,17 +47,54 @@ const LoginForm: React.FC = () => {
       password: password,
       status: true,
     };
-    const result = await dispatch(loginUser(login)).unwrap();
-    dispatch(getAllMessages(login));
-    if (!result.ok) {
-      dispatch(showAlert({ open: "open" }));
-      return;
+    const result = await dispatch(loginUser(login));
+
+    dispatch(showAlert({ open: "open" }));
+
+    if (result.payload !== undefined) {
+      navigate("/messages");
     }
-    navigate("/messages");
   };
   const handlerCreatePg = () => {
     navigate("/creat-acoount");
   };
+
+  //   if (email.length < 4) {
+  //     dispatch(
+  //       setAlertMessage({
+  //         msg: "Preencha o campo email corretamente",
+  //         type: "warning",
+  //       })
+  //     );
+  //     inputEmail.current?.focus();
+  //     return;
+  //   }
+  //   if (password.length < 4) {
+  //     dispatch(
+  //       setAlertMessage({
+  //         msg: "A senha deve ter no minimo 4 caracteres",
+  //         type: "warning",
+  //       })
+  //     );
+  //     inputPassword.current?.focus();
+  //     return;
+  //   }
+  //   const login = {
+  //     email: email,
+  //     password: password,
+  //     status: true,
+  //   };
+  //   const result = await dispatch(loginUser(login)).unwrap();
+  //   dispatch(getAllMessages(login));
+  //   if (!result.ok) {
+  //     dispatch(showAlert({ open: "open" }));
+  //     return;
+  //   }
+  //   navigate("/messages");
+  // };
+  // const handlerCreatePg = () => {
+  //   navigate("/creat-acoount");
+  // };
 
   return (
     <Container

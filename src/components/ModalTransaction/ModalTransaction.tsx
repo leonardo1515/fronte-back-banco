@@ -13,11 +13,16 @@ import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useState, useEffect, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+// import {
+//   selectById,
+//   updateMessage,
+//   updateOne,
+// } from "../../store/modules/MessagsSlace";
 import {
   selectById,
   updateMessage,
   updateOne,
-} from "../../store/modules/MessagsSlace";
+} from "../../store/modules/Message.Slace";
 import { setAlertMessage } from "../../store/modules/AlerSlace";
 import { ModalMessagesProps } from "../TypesComponents";
 
@@ -28,6 +33,7 @@ const ModalTransaction: React.FC<ModalMessagesProps> = ({
 }) => {
   const [message, setMessage] = useState<string>("");
   const [descript, setDescript] = useState<string>("");
+  const user = useAppSelector((state) => state.Login);
   const messageCurretRedux = useAppSelector((state) =>
     selectById(state, idMessage ?? "")
   );
@@ -38,11 +44,12 @@ const ModalTransaction: React.FC<ModalMessagesProps> = ({
       setMessage(messageCurretRedux._message);
       setDescript(messageCurretRedux._descript);
     }
-  }, []);
+  }, [messageCurretRedux]);
 
   const update = useCallback(() => {
     dispatch(
       updateMessage({
+        userId: user.id,
         id: idMessage,
         message: message,
         descript: descript,
@@ -74,7 +81,7 @@ const ModalTransaction: React.FC<ModalMessagesProps> = ({
     idMessage,
     message,
     messageCurretRedux?._status,
-    // user.id,
+    user.id,
   ]);
 
   return (

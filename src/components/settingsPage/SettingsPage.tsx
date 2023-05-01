@@ -6,15 +6,21 @@ import ModalDelete from "../ModalDelete/ModalDelete";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import HeaderDefalt from "../../components/header/Header";
 import { setAlertMessage } from "../../store/modules/AlerSlace";
-import { selectMessages } from "../../store/modules/MessagsSlace";
+// import { selectMessages } from "../../store/modules/MessagsSlace";
+// import {
+//   deleteUser,
+//   editeUser,
+//   updateuser,
+// } from "../../store/modules/LogSlice";
+import { selectMessage } from "../../store/modules/Message.Slace";
 import {
   deleteUser,
   editeUser,
   updateuser,
-} from "../../store/modules/LogSlice";
+} from "../../store/modules/LoginSlice";
 
 const PageSettings: React.FC = () => {
-  const messagesRedux = useAppSelector(selectMessages);
+  const messagesRedux = useAppSelector(selectMessage);
   const [name, setName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [lengthMessags, setLengthMessags] = useState<number>(0);
@@ -22,7 +28,7 @@ const PageSettings: React.FC = () => {
   const [actionType, setActionType] = useState<"message" | "user">("message");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.LogUser);
+  const user = useAppSelector((state) => state.Login);
   const closeModal = () => setOpen(false);
   const openModal = () => {
     setActionType("user");

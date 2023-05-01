@@ -1,5 +1,5 @@
 export type CreateUserProps = {
-  //   id: string;
+  name?: string;
   email: string;
   password: string;
 };

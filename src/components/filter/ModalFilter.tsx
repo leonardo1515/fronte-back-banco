@@ -13,9 +13,11 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useCallback, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { deletMessage } from "../../store/modules/MessagsSlace";
+// import { deletMessage } from "../../store/modules/MessagsSlace";
+import { deletMessage } from "../../store/modules/Message.Slace";
 import { setAlertMessage } from "../../store/modules/AlerSlace";
-import { selectMessages } from "../../store/modules/MessagsSlace";
+// import { selectMessages } from "../../store/modules/MessagsSlace";
+import { selectMessage } from "../../store/modules/Message.Slace";
 import HandlerDrop from "../handleTableDrop/HandlerTableDrop";
 
 interface ModalTransactionProps {
@@ -28,13 +30,15 @@ const ModalFilter: React.FC<ModalTransactionProps> = ({
   actionCancel,
 }) => {
   const [message, setMessage] = useState<string>("");
-  const messagesRedux = useAppSelector(selectMessages);
+  const messagesRedux = useAppSelector(selectMessage);
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.Login);
   const e = messagesRedux.filter((item) => item._message.includes(message));
 
   const handleDeleteMessage = useCallback(
     (_id: string) => {
-      dispatch(deletMessage({ id: _id }));
+      const del = { id: _id, userId: user.id };
+      dispatch(deletMessage(del));
       dispatch(
         setAlertMessage({
           msg: "Mensagem deletada com sucesso.",
@@ -42,7 +46,7 @@ const ModalFilter: React.FC<ModalTransactionProps> = ({
         })
       );
     },
-    [dispatch]
+    [dispatch, user.id]
   );
 
   return (

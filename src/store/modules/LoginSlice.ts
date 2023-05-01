@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
 import {
   apiLogoffApp,
   apiLoginApp,
@@ -8,6 +9,7 @@ import {
 import { DeletUserProps, UpdateUeserProps } from "../../api/types";
 import { LoginUserProps, LogoffUserProps } from "../types/index";
 import { setTestAlert } from "./StatusApiAlertSlice";
+
 export type GetUser = {
   id: string;
   name: string;
@@ -28,15 +30,25 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (login: LoginUserProps, { dispatch }) => {
     const result = await apiLoginApp(login);
-    if (result.ok === false) {
-      dispatch(
-        setTestAlert({
-          msg: result.message,
-          type: "error",
-          open: "close",
-        })
-      );
-    }
+
+    // if (result.ok === false) {
+    //   dispatch(
+    //     setTestAlert({
+    //       msg: result.message,
+    //       type: "error",
+    //       open: "close",
+    //     })
+    //   );
+    // }
+
+    dispatch(
+      setTestAlert({
+        msg: result.message,
+        type: "error",
+        open: "close",
+      })
+    );
+
     sessionStorage.setItem("looged", result.data.status);
     dispatch(
       setTestAlert({
@@ -46,36 +58,6 @@ export const loginUser = createAsyncThunk(
       })
     );
     return result;
-  }
-);
-
-export const logoffUser = createAsyncThunk(
-  "user/logoffUser",
-  async (logoff: LogoffUserProps, { dispatch }) => {
-    try {
-      const result = await apiLogoffApp(logoff);
-      if (result.ok === false) {
-        dispatch(
-          setTestAlert({
-            msg: result.message,
-            type: "error",
-            open: "close",
-          })
-        );
-      }
-
-      dispatch(
-        setTestAlert({
-          msg: result.message,
-          type: "success",
-          open: "close",
-        })
-      );
-
-      return result;
-    } catch (data: any) {
-      return data.message;
-    }
   }
 );
 
@@ -116,6 +98,36 @@ export const editeUser = createAsyncThunk(
   }
 );
 
+export const logoffUser = createAsyncThunk(
+  "user/logoffUser",
+  async (logoff: LogoffUserProps, { dispatch }) => {
+    try {
+      const result = await apiLogoffApp(logoff);
+      if (result.ok === false) {
+        dispatch(
+          setTestAlert({
+            msg: result.message,
+            type: "error",
+            open: "close",
+          })
+        );
+      }
+
+      dispatch(
+        setTestAlert({
+          msg: result.message,
+          type: "success",
+          open: "close",
+        })
+      );
+
+      return result;
+    } catch (data: any) {
+      return data.message;
+    }
+  }
+);
+
 export const deleteUser = createAsyncThunk(
   "user/deletUser",
   async (user: DeletUserProps, { dispatch }) => {
@@ -151,8 +163,8 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
-const logSlice = createSlice({
-  name: "logUser",
+const loginSlice = createSlice({
+  name: "login",
   initialState: initialState,
   reducers: {
     updateuser(state, action) {
@@ -171,7 +183,11 @@ const logSlice = createSlice({
         }
       })
       .addCase(logoffUser.fulfilled, (state, action) => {
+        state.id = "";
+        state.name = "";
+        state.email = "";
         state.status = false;
+        state.password = "";
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
         return initialState;
@@ -179,5 +195,5 @@ const logSlice = createSlice({
       .addCase(editeUser.fulfilled, (state, action) => {});
   },
 });
-export const { updateuser } = logSlice.actions;
-export default logSlice.reducer;
+export const { updateuser } = loginSlice.actions;
+export default loginSlice.reducer;

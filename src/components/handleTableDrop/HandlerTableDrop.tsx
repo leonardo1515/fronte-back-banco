@@ -16,11 +16,16 @@ import { MessagesTableProps } from "../TypesComponents";
 import ModalDelete from "../ModalDelete/ModalDelete";
 import ModalTransaction from "../ModalTransaction/ModalTransaction";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+// import {
+//   selectById,
+//   saveMessage,
+//   updateOne,
+// } from "../../store/modules/MessagsSlace";
 import {
   selectById,
   saveMessage,
   updateOne,
-} from "../../store/modules/MessagsSlace";
+} from "../../store/modules/Message.Slace";
 import { setAlertMessage } from "../../store/modules/AlerSlace";
 
 const HandlerDrop: React.FC<MessagesTableProps> = ({
@@ -32,6 +37,7 @@ const HandlerDrop: React.FC<MessagesTableProps> = ({
   const [open, setOpen] = useState<boolean>(false);
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [actionType, setActionType] = useState<"message" | "user">("message");
+  const user = useAppSelector((state) => state.Login);
   const messageCurretRedux = useAppSelector((state) =>
     selectById(state, messages._id ?? "")
   );
@@ -45,9 +51,11 @@ const HandlerDrop: React.FC<MessagesTableProps> = ({
     setOpen(true);
   };
   const dispatch = useAppDispatch();
+
   const saveMessag = useCallback(() => {
     dispatch(
       saveMessage({
+        userId: user.id,
         id: messages._id,
         message: messageCurretRedux?._message,
         descript: messageCurretRedux?._descript,
@@ -77,6 +85,7 @@ const HandlerDrop: React.FC<MessagesTableProps> = ({
     messageCurretRedux?._message,
     messageCurretRedux?._status,
     messages._id,
+    user.id,
   ]);
 
   return (

@@ -8,14 +8,30 @@ import {
   UpdateMessageProps,
   UpdateUeserProps,
   LogoffProps,
+  DeleteMessagesProps,
 } from "./types";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
+const apiLoginApp = async (login: LoginProps): Promise<ApiResponse> => {
+  try {
+    const result = await axios.post("/user/login", login);
+    return result.data;
+  } catch (error: any) {
+    if (error.request?.response) {
+      return JSON.parse(error.request?.response);
+    }
+
+    return {
+      ok: false,
+      message: error.toString(),
+    };
+  }
+};
 const apiAddUser = async (data: CreateUserProps) => {
   try {
-    const response: AxiosResponse = await axios.post("/user/create", data);
-    return response;
+    const response = await axios.post("/user/create", data);
+    return response.data.code;
   } catch (error: any) {
     if (error.request?.response) {
       return JSON.parse(error.request?.response);
@@ -28,9 +44,11 @@ const apiAddUser = async (data: CreateUserProps) => {
   }
 };
 
-const apiLoginApp = async (login: LoginProps): Promise<ApiResponse> => {
+const apiupdateUser = async (
+  userUpdate: UpdateUeserProps
+): Promise<ApiResponse> => {
   try {
-    const result = await axios.post("/user/login", login);
+    const result = await axios.put(`/user/${userUpdate.id}/update`, userUpdate);
     return result.data;
   } catch (error: any) {
     if (error.request?.response) {
@@ -61,24 +79,6 @@ const apiLogoffApp = async (logoff: LogoffProps) => {
   }
 };
 
-const apiupdateUser = async (
-  userUpdate: UpdateUeserProps
-): Promise<ApiResponse> => {
-  try {
-    const result = await axios.put(`/user/${userUpdate.id}/update`, userUpdate);
-    return result.data;
-  } catch (error: any) {
-    if (error.request?.response) {
-      return JSON.parse(error.request?.response);
-    }
-
-    return {
-      ok: false,
-      message: error.toString(),
-    };
-  }
-};
-
 const apiDeleteUser = async (
   deletUser: DeletUserProps
 ): Promise<ApiResponse> => {
@@ -97,23 +97,23 @@ const apiDeleteUser = async (
   }
 };
 
-// const apiGetAllMessages = async (messages: string): Promise<ApiResponse> => {
-//   try {
-//     const result = await axios.get(`user/${messages}/messages`);
+const apiGetMessages = async (id: string): Promise<ApiResponse> => {
+  try {
+    const result = await axios.get(`user/${id}/messages`);
 
-//     return result.data;
-//   } catch (error: any) {
-//     console.log(error);
-//     if (error.request?.response) {
-//       return JSON.parse(error.request?.response);
-//     }
+    return result.data;
+  } catch (error: any) {
+    console.log(error);
+    if (error.request?.response) {
+      return JSON.parse(error.request?.response);
+    }
 
-//     return {
-//       ok: false,
-//       message: error.toString(),
-//     };
-//   }
-// };
+    return {
+      ok: false,
+      message: error.toString(),
+    };
+  }
+};
 
 const apiAddMessages = async (message: AddMessageProps) => {
   try {
@@ -136,10 +136,49 @@ const apiAddMessages = async (message: AddMessageProps) => {
   }
 };
 
-const apiUpdateMessages = async (message: UpdateMessageProps) => {
+const apiGetMessage = async (id: string): Promise<ApiResponse> => {
+  try {
+    const result = await axios.get(`user/${id}/messages`);
+
+    return result.data;
+  } catch (error: any) {
+    console.log(error);
+    if (error.request?.response) {
+      return JSON.parse(error.request?.response);
+    }
+
+    return {
+      ok: false,
+      message: error.toString(),
+    };
+  }
+};
+
+const apiAddMessage = async (message: AddMessageProps) => {
+  try {
+    const result = await axios.post(
+      `user/${message.userId}/message/create`,
+      message
+    );
+
+    return result.data;
+  } catch (error: any) {
+    console.log(error);
+    if (error.request?.response) {
+      return JSON.parse(error.request?.response);
+    }
+
+    return {
+      ok: false,
+      message: error.toString(),
+    };
+  }
+};
+
+const apiUpdateMessage = async (message: UpdateMessageProps) => {
   try {
     const result = await axios.put(
-      `/user/${message.id}/messages/update`,
+      `/user/${message.id}/messages/${message.userId}/update`,
       message
     );
     return result.data;
@@ -156,12 +195,15 @@ const apiUpdateMessages = async (message: UpdateMessageProps) => {
   }
 };
 
-const apiDeleteMessages = async (id: string): Promise<ApiResponse> => {
+const apisaveMessage = async (message: UpdateMessageProps) => {
   try {
-    const result = await axios.delete(`user/${id}/messages/delete`);
-
+    const result = await axios.put(
+      `/user/${message.id}/messages/${message.userId}/save`,
+      message
+    );
     return result.data;
   } catch (error: any) {
+    console.log(error);
     if (error.request?.response) {
       return JSON.parse(error.request?.response);
     }
@@ -173,15 +215,16 @@ const apiDeleteMessages = async (id: string): Promise<ApiResponse> => {
   }
 };
 
-const apisaveMessages = async (message: UpdateMessageProps) => {
+const apiDeleteMessage = async (
+  delet: DeleteMessagesProps
+): Promise<ApiResponse> => {
   try {
-    const result = await axios.put(
-      `/user/${message.id}/messages/save`,
-      message
+    const result = await axios.delete(
+      `user/${delet.id}/messages/${delet.userId}/delete`
     );
+
     return result.data;
   } catch (error: any) {
-    console.log(error);
     if (error.request?.response) {
       return JSON.parse(error.request?.response);
     }
@@ -194,14 +237,16 @@ const apisaveMessages = async (message: UpdateMessageProps) => {
 };
 
 export {
-  apiAddUser,
   apiLoginApp,
-  apiLogoffApp,
+  apiAddUser,
   apiupdateUser,
+  apiLogoffApp,
   apiDeleteUser,
+  apiGetMessages,
   apiAddMessages,
-  // apiGetAllMessages,
-  apiDeleteMessages,
-  apiUpdateMessages,
-  apisaveMessages,
+  apiGetMessage,
+  apiAddMessage,
+  apiDeleteMessage,
+  apiUpdateMessage,
+  apisaveMessage,
 };

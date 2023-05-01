@@ -6,35 +6,33 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "..";
 import {
-  apiAddMessages,
-  apiDeleteMessages,
-  apiLoginApp,
-  apisaveMessages,
-  apiUpdateMessages,
-} from "../../api";
-import {
   AddMessageProps,
   DeletePopsMessage,
   GetMessageProps,
-  LoginUserProps,
   SaveMessageProps,
 } from "../types/index";
+import {
+  apiAddMessage,
+  apiGetMessage,
+  apisaveMessage,
+  apiUpdateMessage,
+  apiDeleteMessage,
+} from "../../api";
 
 const adapter = createEntityAdapter<GetMessageProps>({
   selectId: (item) => item._id,
 });
 
-export const { selectAll: selectMessages, selectById } = adapter.getSelectors(
-  (state: RootState) => state.MessagsSlice
+export const { selectAll: selectMessage, selectById } = adapter.getSelectors(
+  (state: RootState) => state.Message
 );
 
-export const getAllMessages = createAsyncThunk(
+export const getMessages = createAsyncThunk(
   "user/getAllmessages",
-  async (messages: LoginUserProps) => {
-    const result = await apiLoginApp(messages);
-
+  async (id: string) => {
+    const result = await apiGetMessage(id);
     if (result.ok) {
-      return result.data.message;
+      return result.data;
     }
 
     return [];
@@ -44,7 +42,7 @@ export const getAllMessages = createAsyncThunk(
 export const addMesage = createAsyncThunk(
   "user/addMessage",
   async (message: AddMessageProps) => {
-    const result = await apiAddMessages({ ...message });
+    const result = await apiAddMessage({ ...message });
     if (result.ok) {
       return {
         ok: true,
@@ -58,27 +56,10 @@ export const addMesage = createAsyncThunk(
   }
 );
 
-export const deletMessage = createAsyncThunk(
-  "user/deletMessage",
-  async (messages: DeletePopsMessage) => {
-    const result = await apiDeleteMessages(messages.id);
-    if (result.ok) {
-      return {
-        ok: true,
-        data: messages.id,
-      };
-    }
-
-    return {
-      ok: false,
-    };
-  }
-);
-
 export const updateMessage = createAsyncThunk(
   "user/editeMessage",
   async (message: any) => {
-    const { result } = await apiUpdateMessages(message);
+    const { result } = await apiUpdateMessage(message);
     let changes = {};
 
     if (result.ok) {
@@ -98,7 +79,7 @@ export const updateMessage = createAsyncThunk(
 export const saveMessage = createAsyncThunk(
   "user/saveMessage",
   async (message: SaveMessageProps) => {
-    const result = await apisaveMessages(message);
+    const result = await apisaveMessage(message);
 
     let changes = {};
 
@@ -116,8 +97,26 @@ export const saveMessage = createAsyncThunk(
   }
 );
 
-const messagesSlice = createSlice({
-  name: "messages",
+export const deletMessage = createAsyncThunk(
+  "user/deletMessage",
+  async (messages: DeletePopsMessage) => {
+    const result = await apiDeleteMessage(messages);
+
+    if (result.ok) {
+      return {
+        ok: true,
+        data: messages.id,
+      };
+    }
+
+    return {
+      ok: false,
+    };
+  }
+);
+
+const messageSlice = createSlice({
+  name: "message",
   initialState: adapter.getInitialState(),
   reducers: {
     addOne: adapter.addOne,
@@ -128,7 +127,7 @@ const messagesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(
-        getAllMessages.fulfilled,
+        getMessages.fulfilled,
         (state, action: PayloadAction<GetMessageProps[]>) => {
           adapter.setAll(state, action.payload);
         }
@@ -147,5 +146,5 @@ const messagesSlice = createSlice({
   },
 });
 
-export const { addOne, addMany, updateOne } = messagesSlice.actions;
-export default messagesSlice.reducer;
+export const { addOne, addMany, updateOne } = messageSlice.actions;
+export default messageSlice.reducer;

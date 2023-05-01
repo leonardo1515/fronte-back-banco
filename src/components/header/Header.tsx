@@ -5,7 +5,8 @@ import "./style.css";
 import PositionedMenu from "../menu/Menu";
 import { ShowMessagesProps } from "../TypesComponents/index";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { logoffUser } from "../../store/modules/LogSlice";
+// import { logoffUser } from "../../store/modules/LogSlice";
+import { logoffUser } from "../../store/modules/LoginSlice";
 
 const HeaderDefalt: React.FC<ShowMessagesProps> = ({
   title,
@@ -13,7 +14,7 @@ const HeaderDefalt: React.FC<ShowMessagesProps> = ({
   goMessages,
   goSaves,
 }) => {
-  const user = useAppSelector((state) => state.LogUser);
+  const user = useAppSelector((state) => state.Login);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -23,6 +24,7 @@ const HeaderDefalt: React.FC<ShowMessagesProps> = ({
       status: false,
     };
     dispatch(logoffUser(logoff));
+
     sessionStorage.removeItem("looged");
     navigate("/");
   };

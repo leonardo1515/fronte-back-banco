@@ -7,28 +7,27 @@ export const createUser = createAsyncThunk(
   "user/createUser",
   async (user: CreatUserType, { dispatch }) => {
     try {
-      const { data } = await apiAddUser(user);
-      if (data.ok === true) {
-        const { newUser } = data.data;
+      const data = await apiAddUser(user);
+
+      if (data.code === 201) {
         dispatch(
           setTestAlert({
-            msg: data.message,
+            msg: "New user successfully created",
             type: "success",
             open: "close",
           })
         );
-        return newUser;
+        return data;
       }
-      if (data.ok === false) {
-        dispatch(
-          setTestAlert({
-            msg: data.message,
-            type: "error",
-            open: "close",
-          })
-        );
-        return data.message;
-      }
+
+      dispatch(
+        setTestAlert({
+          msg: data.message,
+          type: "error",
+          open: "close",
+        })
+      );
+      return data;
     } catch (data: any) {
       dispatch(
         setTestAlert({

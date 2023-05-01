@@ -1,6 +1,7 @@
 export type UpdateMessageProps = {
+  userId: string;
   id: string;
-  message?: string;
-  descript?: string;
-  save?: boolean;
+  message?: string | undefined;
+  descript?: string | undefined;
+  save?: boolean | undefined;
 };
